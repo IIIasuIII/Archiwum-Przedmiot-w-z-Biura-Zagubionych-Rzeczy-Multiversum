@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef enum {
+stabilny, 
+chwiejny,
+niestabilny,
+nieklasyfikowany,
+}stab;
+
+typedef struct Node{
+char nazwa[101];
+char swiat[50];
+int poziom_chaosu;
+char opis[300];
+stab stabilnosc;
+
+struct Node* next;
+}Node;
+
+
+
+
+
+
+
+
+
+
+
+
+
+int main()
+{
+
+
+
+return 0
+}
