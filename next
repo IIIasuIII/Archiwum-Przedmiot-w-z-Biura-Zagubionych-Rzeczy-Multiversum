@@ -19,6 +19,28 @@ stab stabilnosc;
 struct Node* next;
 }Node;
 
+void print_list(Node* head) {
+
+Node* current = head;
+
+while(current!=NULL) {
+printf("Nazwa: %s\n", curent->nazwa);
+printf("Swiat: %s\n", curent->swiat);
+printf("Poziom chaosu: %d\n", curent->poziom_chaosu);
+printf("Opis: %s\n", curent->opis);
+printf("stabilnosc: %d\n", curent->stabilnosc);
+
+current = current->next;
+}
+
+
+
+
+
+
+
+
+} // to void
 
 
 
@@ -36,5 +58,5 @@ int main()
 
 
 
-return 0
+return 0;
 }
