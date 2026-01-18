@@ -32,22 +32,36 @@ printf("stabilnosc: %d\n", curent->stabilnosc);
 
 current = current->next;
 }
-
-
-
-
-
-
-
-
 } // to void
 
 
+Node* add_node(Node* head,
+ const char* nazwa,
+ const char* swiat,
+int poziom_chaosu,
+const char* opis,
+stab stabilnosc) {
+
+Node* n = malloc(sizeof(Node));
+if( n==NULL){
+printf("bland pamienci\n");
+return head;
+}
+
+strncpy(n->nazwa, nazwa, 100);
+n->nazwa[100] = '\0';
+strncpy(n->swiat, swiat, 49);
+n->swiat[49] = '\0';
+n->poziom_chaosu = poziom_chaosu;
+strncpy(n->opis, opis, 299);
+n->opis[299] = '\0';
 
 
+n->next=head;
 
+return n;
 
-
+}
 
 
 
