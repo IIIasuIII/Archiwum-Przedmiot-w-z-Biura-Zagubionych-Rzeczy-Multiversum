@@ -24,11 +24,11 @@ void print_list(Node* head) {
 Node* current = head;
 
 while(current!=NULL) {
-printf("Nazwa: %s\n", curent->nazwa);
-printf("Swiat: %s\n", curent->swiat);
-printf("Poziom chaosu: %d\n", curent->poziom_chaosu);
-printf("Opis: %s\n", curent->opis);
-printf("stabilnosc: %d\n", curent->stabilnosc);
+printf("Nazwa: %s\n", current->nazwa);
+printf("Swiat: %s\n", current->swiat);
+printf("Poziom chaosu: %d\n", current->poziom_chaosu);
+printf("Opis: %s\n", current->opis);
+printf("stabilnosc: %d\n", current->stabilnosc);
 
 current = current->next;
 }
@@ -71,6 +71,17 @@ int main()
 {
 
 
+    Node* head = NULL;
+
+    head = add_node(head, "Dlugopis mocy", "Ziemia-12", 5, "moze pisac wszystko", stabilny);
+    head = add_node(head, "Karty tarota", "Pierszy swiat", 6, "Pozwolą określić Twoją osobistą kartę tarota, która będzie Ci towarzyszyć przez całe życie", niestabilny);
+    head = add_node(head, "Maska Weavera", "Krainę snów", 10, "Weaver wierzył, że wiedza jest źródłem mocy, dlatego zawsze chował się za licznymi kłamstwami, traktując je jak płaszcz ochronny.\n"
+                                                              "Nikt nie znał myśli Weavera, twarzy Weavera ani serca Weavera.\n" 
+                                                              "Nawet bogowie nie mogli dostrzec tego, co kryło się za maską.\n", nieklasyfikowany);
+    print_list(head);
+
+  
 
 return 0;
+
 }
