@@ -1,10 +1,87 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef enum {
+stabilny, 
+chwiejny,
+niestabilny,
+nieklasyfikowany,
+}stab;
+
+typedef struct Node{
+char nazwa[101];
+char swiat[50];
+int poziom_chaosu;
+char opis[300];
+stab stabilnosc;
+
+struct Node* next;
+}Node;
+
+void print_list(Node* head) {
+
+Node* current = head;
+
+while(current!=NULL) {
+printf("Nazwa: %s\n", current->nazwa);
+printf("Swiat: %s\n", current->swiat);
+printf("Poziom chaosu: %d\n", current->poziom_chaosu);
+printf("Opis: %s\n", current->opis);
+printf("stabilnosc: %d\n", current->stabilnosc);
+
+current = current->next;
+}
+} // to void
+
+
+Node* add_node(Node* head,
+ const char* nazwa,
+ const char* swiat,
+int poziom_chaosu,
+const char* opis,
+stab stabilnosc) {
+
+Node* n = malloc(sizeof(Node));
+if( n==NULL){
+printf("bland pamienci\n");
+return head;
+}
+
+strncpy(n->nazwa, nazwa, 100);
+n->nazwa[100] = '\0';
+strncpy(n->swiat, swiat, 49);
+n->swiat[49] = '\0';
+n->poziom_chaosu = poziom_chaosu;
+strncpy(n->opis, opis, 299);
+n->opis[299] = '\0';
+
+
+n->next=head;
+
+return n;
+
+}
+
+
+
+
 
 int main()
 {
 
 
+    Node* head = NULL;
 
+    head = add_node(head, "Dlugopis mocy", "Ziemia-12", 5, "moze pisac wszystko", stabilny);
+    head = add_node(head, "Karty tarota", "Pierszy swiat", 6, "Pozwolą określić Twoją osobistą kartę tarota, która będzie Ci towarzyszyć przez całe życie", niestabilny);
+    head = add_node(head, "Maska Weavera", "Krainę snów", 10, "Weaver wierzył, że wiedza jest źródłem mocy, dlatego zawsze chował się za licznymi kłamstwami, traktując je jak płaszcz ochronny.\n"
+                                                              "Nikt nie znał myśli Weavera, twarzy Weavera ani serca Weavera.\n" 
+                                                              "Nawet bogowie nie mogli dostrzec tego, co kryło się za maską.\n", nieklasyfikowany);
+    print_list(head);
 
-return 0
+  
+
+return 0;
+
 }
