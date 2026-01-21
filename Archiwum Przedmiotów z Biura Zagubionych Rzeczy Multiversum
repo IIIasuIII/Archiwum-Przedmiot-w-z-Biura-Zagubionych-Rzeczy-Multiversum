@@ -36,31 +36,174 @@ current = current->next;
 
 
 Node* add_node(Node* head,
- const char* nazwa,
- const char* swiat,
-int poziom_chaosu,
-const char* opis,
-stab stabilnosc) {
+    const char* nazwa,
+    const char* swiat,
+    int poziom_chaosu,
+    const char* opis,
+    stab stabilnosc)
+{
+    Node* it = head;
+    while (it != NULL) {
+        if (strcmp(it->nazwa, nazwa) == 0) {
+            printf("Przedmiot o nazwie \"%s\" juz istnieje!\n", nazwa);
+            return head; // не добавляем дубликат
+        }
+        it = it->next;
+    }
 
-Node* n = malloc(sizeof(Node));
-if( n==NULL){
-printf("bland pamienci\n");
-return head;
+    if (poziom_chaosu < 0 || poziom_chaosu > 10) {
+        printf("Nieprawidlowy poziom chaosu (%d). Zakres 0-10.\n", poziom_chaosu);
+        return head;
+    }
+
+    Node* n = malloc(sizeof(Node));
+    if (n == NULL) {
+        printf("blad pamieci\n");
+        return head;
+    }
+
+    strncpy(n->nazwa, nazwa, 100);
+    n->nazwa[100] = '\0';
+
+    strncpy(n->swiat, swiat, 49);
+    n->swiat[49] = '\0';
+
+    n->poziom_chaosu = poziom_chaosu;
+
+    strncpy(n->opis, opis, 299);
+    n->opis[299] = '\0';
+
+    n->stabilnosc = stabilnosc;
+
+    n->next = head;
+
+   return n;
 }
 
-strncpy(n->nazwa, nazwa, 100);
-n->nazwa[100] = '\0';
-strncpy(n->swiat, swiat, 49);
-n->swiat[49] = '\0';
-n->poziom_chaosu = poziom_chaosu;
-strncpy(n->opis, opis, 299);
-n->opis[299] = '\0';
+
+Node* delete_node(Node* head, const char* nazwa) {
+    Node* current = head;
+    Node* prev = NULL;
+
+    while (current != NULL) {
+        if (strcmp(current->nazwa, nazwa) == 0) {
+            if (current->stabilnosc == niestabilny) {
+                printf("Nie mozna usunac niestabilnego przedmiotu: %s\n", nazwa);
+                return head;
+            }
+
+    
+            if (prev == NULL)
+           {
+                head = current->next;
+            } 
+          else 
+           {
+                prev->next = current->next;
+            }
+
+            free(current);
+            printf("Usunieto przedmiot: %s\n", nazwa);
+            return head;
+        }
+        prev = current;
+        current = current->next;
+    }
+
+    printf("Nie znaleziono przedmiotu: %s\n", nazwa);
+    return head;
+}
 
 
-n->next=head;
 
-return n;
+void edit_node(Node* head, const char* nazwa,
+               const char* new_swiat,
+               int new_poziom_chaosu,
+               const char* new_opis,
+               stab new_stabilnosc)
+{
+    Node* item = head;
+    while(item != NULL) {
+        if(strcmp(item->nazwa, nazwa) == 0) {
+            if(new_poziom_chaosu >= 0 && new_poziom_chaosu <= 10)
+                item->poziom_chaosu = new_poziom_chaosu;
+            else
+                printf("Nieprawidlowy poziom chaosu! Zakres 0-10.\n");
 
+            if(new_swiat != NULL)
+            {
+                strncpy(item->swiat, new_swiat, 49);
+                item->swiat[49] = '\0';
+            }
+
+            if(new_opis != NULL)
+            {
+                strncpy(item->opis, new_opis, 299);
+                item->opis[299] = '\0';
+            }
+
+            item->stabilnosc = new_stabilnosc;
+
+            printf("Zmieniono przedmiot: %s\n", nazwa);
+            return;
+        }
+        item = item->next;
+    }
+    printf("Nie znaleziono przedmiotu: %s\n", nazwa);
+}
+
+Node* find_node(Node* head, const char* nazwa) {
+    Node* current = head;
+    while(current != NULL) {
+        if(strcmp(current->nazwa, nazwa) == 0)
+            return current;
+        current = current->next;
+    }
+    return NULL;
+}
+
+void sort_list_by_name(Node* head) {
+    if (head == NULL) return;
+
+    int swapped;
+    Node* ptr1;
+    Node* lptr = NULL;
+
+    do {
+        swapped = 0;
+        ptr1 = head;
+
+        while (ptr1->next != lptr) {
+            if (strcmp(ptr1->nazwa, ptr1->next->nazwa) > 0) {
+
+                char tmp_nazwa[101], tmp_swiat[50], tmp_opis[300];
+                int tmp_chaos;
+                stab tmp_stab;
+
+                strcpy(tmp_nazwa, ptr1->nazwa);
+                strcpy(tmp_swiat, ptr1->swiat);
+                strcpy(tmp_opis, ptr1->opis);
+                tmp_chaos = ptr1->poziom_chaosu;
+                tmp_stab = ptr1->stabilnosc;
+
+                strcpy(ptr1->nazwa, ptr1->next->nazwa);
+                strcpy(ptr1->swiat, ptr1->next->swiat);
+                strcpy(ptr1->opis, ptr1->next->opis);
+                ptr1->poziom_chaosu = ptr1->next->poziom_chaosu;
+                ptr1->stabilnosc = ptr1->next->stabilnosc;
+
+                strcpy(ptr1->next->nazwa, tmp_nazwa);
+                strcpy(ptr1->next->swiat, tmp_swiat);
+                strcpy(ptr1->next->opis, tmp_opis);
+                ptr1->next->poziom_chaosu = tmp_chaos;
+                ptr1->next->stabilnosc = tmp_stab;
+
+                swapped = 1;
+            }
+            ptr1 = ptr1->next;
+        }
+        lptr = ptr1;
+    } while (swapped);
 }
 
 
@@ -78,10 +221,26 @@ int main()
     head = add_node(head, "Maska Weavera", "Krainę snów", 10, "Weaver wierzył, że wiedza jest źródłem mocy, dlatego zawsze chował się za licznymi kłamstwami, traktując je jak płaszcz ochronny.\n"
                                                               "Nikt nie znał myśli Weavera, twarzy Weavera ani serca Weavera.\n" 
                                                               "Nawet bogowie nie mogli dostrzec tego, co kryło się za maską.\n", nieklasyfikowany);
+    printf("=== Lista początkowa ===\n");
     print_list(head);
 
+
+    sort_list_by_name(head);
+    printf("\n=== Lista posortowana po nazwie ===\n");
+    print_list(head);
+
+   
+    edit_node(head, "Karty tarota", "Nowy Swiat", 7, "Zmieniony opis tarota", chwiejny);
+
   
+    head = delete_node(head, "Dlugopis mocy");   // можно удалить (stabilny)
+    head = delete_node(head, "Karty tarota");    // можно удалить (chwiejny)
+    head = delete_node(head, "Nieistniejący");   // несуществующий — сообщение
 
-return 0;
 
+    printf("\n=== Lista po edycji i usuwaniu ===\n");
+    print_list(head);
+
+    return 0;
+}
 }
