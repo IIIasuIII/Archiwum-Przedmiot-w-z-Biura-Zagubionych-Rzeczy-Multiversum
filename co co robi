@@ -1,0 +1,37 @@
+#include <stdio.h>   // printf, scanf, fgets
+#include <stdlib.h>  //  malloc, free
+#include <string.h>  // strcmp, strncpy, strcpy
+
+//dalej
+
+
+typedef enum {
+    stabilny,
+    chwiejny,
+    niestabilny,
+    nieklasyfikowany,
+} stab;
+
+
+//Tworzymy wyliczenie dla stanu przedmiotu: stabilny, niestabilny 
+//Wartości będą wynosić 0, 1, 2, 3.
+
+//printuje spisk
+void print_list(Node* head) {
+    Node* current = head;
+    while(current != NULL) {
+        printf("Nazwa: %s\n", current->nazwa);
+        printf("Swiat: %s\n", current->swiat);
+        printf("Poziom chaosu: %d\n", current->poziom_chaosu);
+        printf("Opis: %s\n", current->opis);
+        printf("stabilnosc: %d\n", current->stabilnosc);
+        current = current->next;
+    }
+}
+
+
+///n->next = head;
+//return n;
+
+
+///Wstawiamy nowy węzeł na początek listy i zwracamy nową głowę.
