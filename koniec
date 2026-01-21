@@ -1,0 +1,285 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef enum {
+stabilny,
+chwiejny,
+niestabilny,
+nieklasyfikowany,
+}stab;
+
+typedef struct Node{
+char nazwa[101];
+char swiat[50];
+int poziom_chaosu;
+char opis[300];
+stab stabilnosc;
+
+struct Node* next;
+}Node;
+
+void print_list(Node* head) {
+
+Node* current = head;
+
+while(current!=NULL) {
+printf("Nazwa: %s\n", current->nazwa);
+printf("Swiat: %s\n", current->swiat);
+printf("Poziom chaosu: %d\n", current->poziom_chaosu);
+printf("Opis: %s\n", current->opis);
+printf("stabilnosc: %d\n", current->stabilnosc);
+
+current = current->next;
+}
+} // to void
+
+
+Node* add_node(Node* head,
+    const char* nazwa,
+    const char* swiat,
+    int poziom_chaosu,
+    const char* opis,
+    stab stabilnosc)
+{
+    Node* it = head;
+    while (it != NULL) {
+        if (strcmp(it->nazwa, nazwa) == 0) {
+            printf("Przedmiot o nazwie \"%s\" juz istnieje!\n", nazwa);
+            return head; // не добавляем дубликат
+        }
+        it = it->next;
+    }
+
+    if (poziom_chaosu < 0 || poziom_chaosu > 10) {
+        printf("Nieprawidlowy poziom chaosu (%d). Zakres 0-10.\n", poziom_chaosu);
+        return head;
+    }
+
+    Node* n = malloc(sizeof(Node));
+    if (n == NULL) {
+        printf("blad pamieci\n");
+        return head;
+    }
+
+    strncpy(n->nazwa, nazwa, 100);
+    n->nazwa[100] = '\0';
+
+    strncpy(n->swiat, swiat, 49);
+    n->swiat[49] = '\0';
+
+    n->poziom_chaosu = poziom_chaosu;
+
+    strncpy(n->opis, opis, 299);
+    n->opis[299] = '\0';
+
+    n->stabilnosc = stabilnosc;
+
+    n->next = head;
+
+   return n;
+}
+
+
+Node* delete_node(Node* head, const char* nazwa) {
+    Node* current = head;
+    Node* prev = NULL;
+
+    while (current != NULL) {
+        if (strcmp(current->nazwa, nazwa) == 0) {
+            if (current->stabilnosc == niestabilny) {
+                printf("Nie mozna usunac niestabilnego przedmiotu: %s\n", nazwa);
+                return head;
+            }
+
+
+            if (prev == NULL)
+           {
+                head = current->next;
+            }
+          else
+           {
+                prev->next = current->next;
+            }
+
+            free(current);
+            printf("Usunieto przedmiot: %s\n", nazwa);
+            return head;
+        }
+        prev = current;
+        current = current->next;
+    }
+
+    printf("Nie znaleziono przedmiotu: %s\n", nazwa);
+    return head;
+}
+
+
+
+void edit_node(Node* head, const char* nazwa,
+               const char* new_swiat,
+               int new_poziom_chaosu,
+               const char* new_opis,
+               stab new_stabilnosc)
+{
+    Node* item = head;
+    while(item != NULL) {
+        if(strcmp(item->nazwa, nazwa) == 0) {
+            if(new_poziom_chaosu >= 0 && new_poziom_chaosu <= 10)
+                item->poziom_chaosu = new_poziom_chaosu;
+            else
+                printf("Nieprawidlowy poziom chaosu! Zakres 0-10.\n");
+
+            if(new_swiat != NULL)
+            {
+                strncpy(item->swiat, new_swiat, 49);
+                item->swiat[49] = '\0';
+            }
+
+            if(new_opis != NULL)
+            {
+                strncpy(item->opis, new_opis, 299);
+                item->opis[299] = '\0';
+            }
+
+            item->stabilnosc = new_stabilnosc;
+
+            printf("Zmieniono przedmiot: %s\n", nazwa);
+            return;
+        }
+        item = item->next;
+    }
+    printf("Nie znaleziono przedmiotu: %s\n", nazwa);
+}
+
+Node* find_node(Node* head, const char* nazwa) {
+    Node* current = head;
+    while(current != NULL) {
+        if(strcmp(current->nazwa, nazwa) == 0)
+            return current;
+        current = current->next;
+    }
+    return NULL;
+}
+
+void sort_list_by_name(Node* head) {
+    if (head == NULL) return;
+
+    int swapped;
+    Node* ptr1;
+    Node* lptr = NULL;
+
+    do {
+        swapped = 0;
+        ptr1 = head;
+
+        while (ptr1->next != lptr) {
+            if (strcmp(ptr1->nazwa, ptr1->next->nazwa) > 0) {
+
+                char tmp_nazwa[101], tmp_swiat[50], tmp_opis[300];
+                int tmp_chaos;
+                stab tmp_stab;
+
+                strcpy(tmp_nazwa, ptr1->nazwa);
+                strcpy(tmp_swiat, ptr1->swiat);
+                strcpy(tmp_opis, ptr1->opis);
+                tmp_chaos = ptr1->poziom_chaosu;
+                tmp_stab = ptr1->stabilnosc;
+
+                strcpy(ptr1->nazwa, ptr1->next->nazwa);
+                strcpy(ptr1->swiat, ptr1->next->swiat);
+                strcpy(ptr1->opis, ptr1->next->opis);
+                ptr1->poziom_chaosu = ptr1->next->poziom_chaosu;
+                ptr1->stabilnosc = ptr1->next->stabilnosc;
+
+                strcpy(ptr1->next->nazwa, tmp_nazwa);
+                strcpy(ptr1->next->swiat, tmp_swiat);
+                strcpy(ptr1->next->opis, tmp_opis);
+                ptr1->next->poziom_chaosu = tmp_chaos;
+                ptr1->next->stabilnosc = tmp_stab;
+
+                swapped = 1;
+            }
+            ptr1 = ptr1->next;
+        }
+        lptr = ptr1;
+    } while (swapped);
+}
+
+
+
+
+
+int main() {
+    Node* head = NULL;
+
+    // Три стартовых артефакта
+    head = add_node(head, "Dlugopis mocy", "Ziemia-12", 5,
+        "moze pisac wszystko", stabilny);
+    head = add_node(head, "Karty tarota", "Pierszy swiat", 6,
+        "Pozwola okreslic Twoja osobista karte tarota, ktora bedzie Ci towarzyszyc przez cale zycie", niestabilny);
+    head = add_node(head, "Maska Weavera", "Kraine snow", 10,
+        "Weaver wierzyl, ze wiedza jest zrodlem mocy, "
+    "dlatego zawsze chowal sie za licznymi klamstwami, \n"
+    "traktujac je jak plaszcz ochronny.\n"
+    "Nikt nie znal mysli Weavera, twarzy Weavera ani serca Weavera.\n"
+    "Nawet bogowie nie mogli dostrzec tego, co krylo sie za maska.\n", nieklasyfikowany);
+
+    int choice;
+    char nazwa[101], swiat[50], opis[300];
+    int chaos;
+    int stab_val;
+
+    do {
+        printf("\n=== Biuro Zagubionych Rzeczy Multiversum ===\n");
+        printf("1. Pokaz wszystkie przedmioty\n");
+        printf("2. Dodaj nowy przedmiot\n");
+        printf("3. Edytuj przedmiot\n");
+        printf("4. Usun przedmiot\n");
+        printf("5. Sortuj liste po nazwie\n");
+        printf("0. Wyjdz\n");
+        printf("Twoj wybor: ");
+        scanf("%d", &choice);
+        getchar();
+
+        switch(choice) {
+            case 1:
+                print_list(head);
+                break;
+            case 2:
+                printf("Nazwa: \n"); fgets(nazwa, 101, stdin); nazwa[strcspn(nazwa, "\n")] = 0;
+                printf("Swiat: "); fgets(swiat, 50, stdin); swiat[strcspn(swiat, "\n")] = 0;
+                printf("Poziom chaosu (0-10): "); scanf("%d", &chaos); getchar();
+                printf("Opis: "); fgets(opis, 300, stdin); opis[strcspn(opis, "\n")] = 0;
+                printf("Stabilnosc (0=stabilny,1=chwiejny,2=niestabilny,3=nieklasyfikowany): \n");
+                scanf("%d", &stab_val); getchar();
+                head = add_node(head, nazwa, swiat, chaos, opis, (stab)stab_val);
+                break;
+            case 3:
+                printf("Nazwa przedmiotu do edycji: "); fgets(nazwa, 101, stdin); nazwa[strcspn(nazwa, "\n")] = 0;
+                printf("Nowy swiat: "); fgets(swiat, 50, stdin); swiat[strcspn(swiat, "\n")] = 0;
+                printf("Nowy poziom chaosu (0-10): "); scanf("%d", &chaos); getchar();
+                printf("Nowy opis: "); fgets(opis, 300, stdin); opis[strcspn(opis, "\n")] = 0;
+                printf("Nowa stabilnosc (0=stabilny,1=chwiejny,2=niestabilny,3=nieklasyfikowany): ");
+                scanf("%d", &stab_val); getchar();
+                edit_node(head, nazwa, swiat, chaos, opis, (stab)stab_val);
+                break;
+            case 4:
+                printf("Nazwa przedmiotu do usuniecia: "); fgets(nazwa, 101, stdin); nazwa[strcspn(nazwa, "\n")] = 0;
+                head = delete_node(head, nazwa);
+                break;
+            case 5:
+                sort_list_by_name(head);
+                printf("Lista posortowana.\n");
+                break;
+            case 0:
+                printf("Koniec programu.\n");
+                break;
+            default:
+                printf("Nieprawidlowy wybor.\n");
+        }
+
+    } while(choice != 0);
+
+    return 0;
+}
